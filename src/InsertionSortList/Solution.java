@@ -38,8 +38,23 @@ public class Solution {
     }
 
     public ListNode insertionSortList2(ListNode head) {
-        ListNodeD headD = ListNodeD.toListNodeD(head);
-        return null;
+        if(head==null)return null;
+        ListNodeD headD = ListNodeD.toListNodeD(head,null);
+        ListNodeD node=headD.next;
+        int temp;
+        while (node!=null){
+            ListNodeD node2=node;
+            while(node2!=null){
+                if(node2.pre!=null&&node2.val<node2.pre.val){
+                    temp=node2.val;
+                    node2.val=node2.pre.val;
+                    node2.pre.val=temp;
+                }
+                node2=node2.pre;
+            }
+            node=node.next;
+        }
+        return ListNodeD.toListNode(headD);
     }
 
     public static void main(String[] args) {
@@ -50,6 +65,9 @@ public class Solution {
         s.insertionSortList(h1);
         System.out.println(s.insertionSortList(h2).toString());
         System.out.println(s.insertionSortList(h3).toString());
+        s.insertionSortList2(h1);
+        System.out.println(s.insertionSortList2(h2).toString());
+        System.out.println(s.insertionSortList2(h3).toString());
 
     }
 
@@ -60,6 +78,7 @@ public class Solution {
             if (i == 0) {
                 head = new ListNode(a[0]);
                 node = head;
+                continue;
             }
             node.next = new ListNode(a[i]);
             node = node.next;
@@ -84,25 +103,31 @@ class ListNode{
         return s;
     }
 }
+
+/**
+ * 双向链表
+ */
 class ListNodeD {
     int val;
     ListNodeD next;
     ListNodeD pre;
 
-    public ListNodeD() {
+    public ListNodeD(int val) {
+        this.val=val;
     }
-    public static ListNodeD toListNodeD(ListNode head) {
-        if (head == null) return null;
-        ListNodeD headD = new ListNodeD();
-        ListNodeD pre = null;
-        do {
-            headD.val = head.val;
-            headD.next = toListNodeD(head.next);
-            headD.pre = pre;
-            head = head.next;
-            pre = toListNodeD(head);
-        } while (head != null);
+    //单向链表转换为双向链表
+    public static ListNodeD toListNodeD(ListNode head,ListNodeD pre) {
+        if(head==null)return null;
+        ListNodeD headD=new ListNodeD(head.val);
+        headD.pre=pre;
+        headD.next=toListNodeD(head.next,headD);
         return headD;
     }
-
+    //双向链表转换为单向链表
+    public static ListNode toListNode(ListNodeD headD){
+        if(headD==null)return null;
+        ListNode head=new ListNode(headD.val);
+        head.next=toListNode(headD.next);
+        return head;
+    }
 }
